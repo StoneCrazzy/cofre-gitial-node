@@ -1,48 +1,45 @@
 name: Pipeline Node.js
-
+ 
 on:
   push:
     branches:
       - main
-
+ 
 jobs:
   deploy:
-    runs-on: ubuntu-laterst
-
+    runs-on: ubuntu-latest
+ 
     steps:
       - name: Checkout
-        uses: actions/Checkout@v4
-
-      - name: Istalar Node.js
-        uses: action/setup-node@v4
+        uses: actions/checkout@v4
+ 
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      
+     
       - name: Instalar as dependências
         run: npm install
-        working-directory: ./app
-
-      - name: Adicionar os envs
-        env:  
-          DB_HOST: ${{secret.DB_HOST }}
-          DB_USER: ${{secret.DB_USER }}
-          DB_PASSWORD: ${{secret.APP_VERSION }}
-          APP_VERSION: ${{secret.APP_VERSION }}
-          ENVIROMENT: ${{secret.ENVIROMENT }}
-        
-        run: | 
-          timeout 10s npm start
-        working-directory: ./app
-
+ 
+      - name: Rodar aplicação
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          APP_VERSION: ${{ secrets.APP_VERSION }}
+          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+       
+        run: |
+          npm start &
+          sleep 10
+ 
       - name: Exibir secrets mascarados
         run: |
-          echo "DB_HOST=${{ secret.DB_HOST }}"
-          echo "DB_USER=${{ secret.DB_USER }}"
-          echo "APP_VERSION=${{ secret.APP_VERSION }}"
-          echo "ENVIROMENT=${{ secret.ENVIROMENT }}"
-        
-      -name: Pipeline finalizada
-      run: echo "Deploy executada com sucesso!"
-          
-    
-      
+          echo "DB_HOST=${{ secrets.DB_HOST }}"
+          echo "DB_USER=${{ secrets.DB_USER }}"
+          echo "APP_VERSION=${{ secrets.APP_VERSION }}"
+          echo "ENVIRONMENT=${{ secrets.ENVIRONMENT }}"
+     
+      - name: Pipeline finalizada
+        run: echo "Deploy executado com sucesso!"
+ 
